@@ -4,11 +4,13 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {AMM} from "../src/AMM.sol";
 import {PointsHook} from "../src/PointsHook.sol";
+import {DynamicFeeHook} from "../src/DynamicFeeHook.sol";
 import {MockERC20} from "../src/mocks/MockERC20.sol";
 
 contract AMMTest is Test {
     AMM amm;
     PointsHook pointsHook;
+    DynamicFeeHook dynamicFeeHook;
     MockERC20 token0;
     MockERC20 token1;
 
@@ -20,9 +22,12 @@ contract AMMTest is Test {
         token1 = new MockERC20("Token B", "TKNB");
 
         pointsHook = new PointsHook();
-        amm = new AMM(address(token0), address(token1), address(pointsHook));
+        dynamicFeeHook = new DynamicFeeHook();
+
+        amm = new AMM(address(token0), address(token1), address(pointsHook), address(dynamicFeeHook));
 
         pointsHook.setAmmAddress(address(amm));
+        dynamicFeeHook.setAmmAddress(address(amm));
 
         // Mint initial tokens to users
         token0.mint(user1, 10000 ether);

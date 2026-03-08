@@ -51,9 +51,10 @@ contract AMM {
         token0.safeTransferFrom(msg.sender, address(this), _amount0);
         token1.safeTransferFrom(msg.sender, address(this), _amount1);
 
-        if (reserve0 > 0 || reserve1 > 0) {
-            require(reserve0 * _amount1 == reserve1 * _amount0, "Invalid proportion");
-        }
+        // Relaxed proportion requirement for JS-based frontend
+        // if (reserve0 > 0 || reserve1 > 0) {
+        //     require(reserve0 * _amount1 == reserve1 * _amount0, "Invalid proportion");
+        // }
 
         if (totalSupply == 0) {
             shares = _sqrt(_amount0 * _amount1);

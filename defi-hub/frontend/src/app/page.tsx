@@ -54,6 +54,17 @@ const POSITION_MANAGER_ABI = [
 const TOKEN0_ADDRESS = process.env.NEXT_PUBLIC_TOKEN0_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const TOKEN1_ADDRESS = process.env.NEXT_PUBLIC_TOKEN1_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
 const AMM_ADDRESS = process.env.NEXT_PUBLIC_AMM_ADDRESS || "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0"
+const POINTS_HOOK_ADDRESS = process.env.NEXT_PUBLIC_POINTS_HOOK_ADDRESS || "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+
+const ERC1155_ABI = [
+  {
+    "type": "function",
+    "name": "balanceOf",
+    "inputs": [{ "name": "account", "type": "address" }, { "name": "id", "type": "uint256" }],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  }
+]
 
 const AMM_ABI = [
   {
@@ -126,14 +137,17 @@ export default function Home() {
   const [mounted, setMounted] = useState(false)
 
   // Consultar la comisión (fee dinámico actual base 10000)
-  const { data: currentFeeBps } = useReadContract({
+  const { data: currentFeeBps, refetch: refetchFee } = useReadContract({
     address: HOOK_ADDRESS as `0x${string}`,
     abi: DYNAMIC_FEE_HOOK_ABI,
     functionName: 'getDynamicFee',
-  })
+    query: {
+      enabled: !!address,
+    }
+  });
 
   // Consultar la Posición Optimizada del Usuario
-  const { data: userPositionData } = useReadContract({
+  const { data: userPositionData, refetch: refetchPosition } = useReadContract({
     address: POSITION_MANAGER_ADDRESS as `0x${string}`,
     abi: POSITION_MANAGER_ABI,
     functionName: 'getOptimizedPosition',
@@ -141,7 +155,18 @@ export default function Home() {
     query: {
       enabled: !!address,
     }
-  })
+  });
+
+  // Balance de Puntos
+  const { data: pointsBalance, refetch: refetchPoints } = useReadContract({
+    address: POINTS_HOOK_ADDRESS as `0x${string}`,
+    abi: ERC1155_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address, BigInt(1)] : undefined,
+    query: {
+      enabled: !!address,
+    }
+  });
 
   // Convertir fee (ej. 30 -> 0.3%)
   const feePercentage = (Number(currentFeeBps ?? 30) / 100).toFixed(2);
@@ -256,15 +281,16 @@ export default function Home() {
   })
 
   // Balance de Puntos ERC-1155
-  const { data: pointsBalance, refetch: refetchPoints } = useReadContract({
-    address: HOOK_ADDRESS as `0x${string}`,
-    abi: POINTS_HOOK_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address, BigInt(1)] : undefined,
-    query: {
-      enabled: !!address,
-    }
-  })
+  // This block was moved and updated above.
+  // const { data: pointsBalance, refetch: refetchPoints } = useReadContract({
+  //   address: HOOK_ADDRESS as `0x${string}`,
+  //   abi: POINTS_HOOK_ABI,
+  //   functionName: 'balanceOf',
+  //   args: address ? [address, BigInt(1)] : undefined,
+  //   query: {
+  //     enabled: !!address,
+  //   }
+  // })
 
   // Recarga Global
   const refetchAll = () => {
@@ -272,6 +298,8 @@ export default function Home() {
     refetchB();
     refetchR0();
     refetchR1();
+    refetchFee();
+    refetchPosition();
     refetchPoints();
   }
 

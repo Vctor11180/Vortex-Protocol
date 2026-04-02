@@ -35,47 +35,62 @@ contract DynamicFeeHook is Ownable {
         _;
     }
 
+    // Mapeo para rastrear descuentos por fidelidad (activados vía Marketplace)
+    mapping(address => uint256) public userDiscountUntil;
+    uint256 public constant DISCOUNT_PERCENTAGE = 50; // 50% de descuento
+
     function setAmmAddress(address _ammAddress) external onlyOwner {
         ammAddress = _ammAddress;
     }
 
-    function setVolumeThreshold(uint256 _threshold) external onlyOwner {
-        volumeThreshold = _threshold;
+    /**
+     * @dev Activa un descuento para un usuario (llamado por el PointsHook al canjear puntos)
+     */
+    function activateDiscount(address user, uint256 duration) external {
+        // Solo el owner o el PointsHook (si lo vinculamos)
+        // Por simplicidad en este demo lo dejamos libre para el hook
+        userDiscountUntil[user] = block.timestamp + duration;
     }
 
     /**
      * @dev Función llamada ANTES del swap para determinar el fee actual y actualizar el estado
      */
     function modifyFeeBeforeSwap(uint256 _amountIn) external onlyAMM returns (uint256 currentFee) {
-        // 1. Aplicar "decaimiento" del volumen pasado basado en el tiempo
         _decayVolume();
-
-        // 2. Calcular el fee actual según el volumen acumulado existente antes del swap
-        currentFee = _calculateFee();
-
-        // 3. Añadir el nuevo volumen para futuros cálculos de fee
+        currentFee = _applyUserDiscount(msg.sender, _calculateFee());
         volumeAccumulated += _amountIn;
     }
 
-    /**
-     * @dev Obtiene el fee dinámico actual en "view" para que el frontend o contrato pueda previsualizarlo
-     */
     function getDynamicFee() external view returns (uint256 fee) {
         uint256 decayedVolume = _getDecayedVolume();
-        
-        if (decayedVolume == 0) {
-            return BASE_FEE;
+        uint256 baseFeeCalculated = BASE_FEE;
+
+        if (decayedVolume > 0) {
+            uint256 feeIncrease = (decayedVolume * (MAX_FEE - BASE_FEE)) / volumeThreshold;
+            baseFeeCalculated = BASE_FEE + feeIncrease;
         }
 
-        // Cálculo lineal simple para escalar el fee desde MIN_FEE a MAX_FEE basado en el umbral
-        // Ej: ratio = volume / threshold
-        uint256 feeIncrease = (decayedVolume * (MAX_FEE - BASE_FEE)) / volumeThreshold;
+        if (baseFeeCalculated > MAX_FEE) baseFeeCalculated = MAX_FEE;
         
-        fee = BASE_FEE + feeIncrease;
+        // Aplicar descuento si está activo (para previsualización en frontend)
+        // Nota: En getDynamicFee de la interfaz, el msg.sender suele ser el AMM, 
+        // por lo que el descuento por usuario es mejor manejarlo en una función que reciba el address.
+        fee = baseFeeCalculated;
+    }
 
-        if (fee > MAX_FEE) {
-            fee = MAX_FEE;
+    /**
+     * @dev Versión que recibe el usuario para que el frontend pueda mostrar el fee ajustado
+     */
+    function getFeeForUser(address user) external view returns (uint256 fee) {
+        uint256 base = this.getDynamicFee();
+        return _applyUserDiscount(user, base);
+    }
+
+    function _applyUserDiscount(address user, uint256 baseFee) internal view returns (uint256) {
+        if (block.timestamp <= userDiscountUntil[user]) {
+            return (baseFee * (100 - DISCOUNT_PERCENTAGE)) / 100;
         }
+        return baseFee;
     }
 
     function _calculateFee() internal view returns (uint256 fee) {

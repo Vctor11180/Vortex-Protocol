@@ -5,14 +5,14 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 import {PointsHook} from "./PointsHook.sol";
 import {DynamicFeeHook} from "./DynamicFeeHook.sol";
+import {HookRegistry} from "./HookRegistry.sol";
 
 contract AMM {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable token0;
     IERC20 public immutable token1;
-    PointsHook public immutable pointsHook;
-    DynamicFeeHook public immutable dynamicFeeHook;
+    HookRegistry public immutable registry;
 
     uint256 public reserve0;
     uint256 public reserve1;
@@ -23,13 +23,11 @@ contract AMM {
     constructor(
         address _token0, 
         address _token1, 
-        address _pointsHook,
-        address _dynamicFeeHook
+        address _registry
     ) {
         token0 = IERC20(_token0);
         token1 = IERC20(_token1);
-        pointsHook = PointsHook(_pointsHook);
-        dynamicFeeHook = DynamicFeeHook(_dynamicFeeHook);
+        registry = HookRegistry(_registry);
     }
 
     function _mint(address _to, uint256 _amount) private {
@@ -50,11 +48,6 @@ contract AMM {
     function addLiquidity(uint256 _amount0, uint256 _amount1) external returns (uint256 shares) {
         token0.safeTransferFrom(msg.sender, address(this), _amount0);
         token1.safeTransferFrom(msg.sender, address(this), _amount1);
-
-        // Relaxed proportion requirement for JS-based frontend
-        // if (reserve0 > 0 || reserve1 > 0) {
-        //     require(reserve0 * _amount1 == reserve1 * _amount0, "Invalid proportion");
-        // }
 
         if (totalSupply == 0) {
             shares = _sqrt(_amount0 * _amount1);
@@ -93,10 +86,13 @@ contract AMM {
 
         tokenIn.safeTransferFrom(msg.sender, address(this), _amountIn);
 
+        // Dynamic hook lookup from Registry
+        (address pointsHook, address dynamicFeeHook) = registry.getHooks();
+
         // Before Swap Hook Call for Dynamic Fee
         uint256 feeBps = 30; // Base fee 0.3%
-        if (address(dynamicFeeHook) != address(0)) {
-            feeBps = dynamicFeeHook.modifyFeeBeforeSwap(_amountIn);
+        if (dynamicFeeHook != address(0)) {
+            feeBps = DynamicFeeHook(dynamicFeeHook).modifyFeeBeforeSwap(_amountIn);
         }
 
         // Apply dynamic fee based on 10,000 basis points
@@ -107,10 +103,11 @@ contract AMM {
         _update(token0.balanceOf(address(this)), token1.balanceOf(address(this)));
 
         // After Swap Hook Call
-        if (address(pointsHook) != address(0)) {
-            pointsHook.afterSwap(msg.sender, _amountIn);
+        if (pointsHook != address(0)) {
+            PointsHook(pointsHook).afterSwap(msg.sender, _amountIn);
         }
     }
+
 
     function _sqrt(uint256 y) private pure returns (uint256 z) {
         if (y > 3) {

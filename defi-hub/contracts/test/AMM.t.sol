@@ -5,10 +5,12 @@ import {Test, console} from "forge-std/Test.sol";
 import {AMM} from "../src/AMM.sol";
 import {PointsHook} from "../src/PointsHook.sol";
 import {DynamicFeeHook} from "../src/DynamicFeeHook.sol";
+import {HookRegistry} from "../src/HookRegistry.sol";
 import {MockERC20} from "../src/mocks/MockERC20.sol";
 
 contract AMMTest is Test {
     AMM amm;
+    HookRegistry registry;
     PointsHook pointsHook;
     DynamicFeeHook dynamicFeeHook;
     MockERC20 token0;
@@ -21,13 +23,18 @@ contract AMMTest is Test {
         token0 = new MockERC20("Token A", "TKNA");
         token1 = new MockERC20("Token B", "TKNB");
 
+        registry = new HookRegistry();
         pointsHook = new PointsHook();
         dynamicFeeHook = new DynamicFeeHook();
 
-        amm = new AMM(address(token0), address(token1), address(pointsHook), address(dynamicFeeHook));
+        registry.updatePointsHook(address(pointsHook));
+        registry.updateDynamicFeeHook(address(dynamicFeeHook));
+
+        amm = new AMM(address(token0), address(token1), address(registry));
 
         pointsHook.setAmmAddress(address(amm));
         dynamicFeeHook.setAmmAddress(address(amm));
+        pointsHook.setDynamicFeeHook(address(dynamicFeeHook));
 
         // Mint initial tokens to users
         token0.mint(user1, 10000 ether);

@@ -1,0 +1,12 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+Warning: Dependency 'lib\forge-std' revision mismatch: expected '0844d7e1fc5e60d77b68e469bff60265f236c398', found 'dcd1992ea7422b028b962c411503042b4b4175af'
+Warning: Dependency 'lib\openzeppelin-contracts' revision mismatch: expected '56a3de2cea907c9a500d32e70c275f68393b7ba6', found 'dcd1992ea7422b028b962c411503042b4b4175af'
+Compiling 59 files with Solc 0.8.34
+Solc 0.8.34 finished in 691.96ms
+Error: Compiler run failed:
+Error (6160): Wrong argument count for function call: 4 arguments given but expected 3.
+  --> script/DeployFix.s.sol:23:22:
+   |
+23 |         AMM newAmm = new AMM(token0, token1, address(hook), address(dynamicFeeHook));
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,11 +1,15 @@
 import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia, foundry } from 'wagmi/chains'
+import { sepolia } from 'wagmi/chains'
+import { injected } from 'wagmi/connectors'
 
+// Configuración para la red Sepolia (Chain ID: 11155111)
 export const config = createConfig({
-  chains: [mainnet, sepolia, foundry],
+  chains: [sepolia],
+  connectors: [
+    injected(),
+  ],
   transports: {
-    [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [foundry.id]: http(),
   },
 })
+

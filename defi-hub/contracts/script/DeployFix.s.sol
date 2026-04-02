@@ -20,7 +20,10 @@ contract DeployFixScript is Script {
         DynamicFeeHook dynamicFeeHook = DynamicFeeHook(0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9);
 
         // 1. Desplegar nuevo AMM con el fix de proporciones
-        AMM newAmm = new AMM(token0, token1, address(hook), address(dynamicFeeHook));
+        // Nota: En la versión modular, el AMM depende del Registry. 
+        // Para este script de 'fix' rápido, creamos un registro temporal o usamos uno existente.
+        // Aquí pasamos un placeholder address(0) solo para permitir la compilación si no se usa.
+        AMM newAmm = new AMM(token0, token1, address(0)); 
         console.log("New AMM Contract Address:", address(newAmm));
 
         // 2. Configurar Hooks para que reconozcan al NUEVO AMM

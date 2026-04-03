@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeFi Hub - Ecosistema Web3",
-  description: "Mini-DEX, Dynamic Fees, y Position Manager en un Ecosistema Avanzado",
+  title: "Vortex Protocol | Mentored DeFi",
+  description: "DEX de próxima generación con Mentoria IA, Hooks Dinámicos y Recompensas On-Chain en Sepolia.",
 };
 
 export default function RootLayout({
@@ -24,9 +24,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('vortex-theme');
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+                  if (!theme && supportDarkMode) theme = 'dark';
+                  if (!theme) theme = 'light';
+                  if (theme === 'dark') document.documentElement.classList.add('dark');
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-neutral-50 min-h-screen font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen font-sans`}
       >
         <Providers>
           {children}

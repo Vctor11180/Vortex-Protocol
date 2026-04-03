@@ -1,107 +1,64 @@
-# DeFi Hub - Vortex Protocol (Versión Modular & IA)
+# DeFi Hub - Vortex Protocol (Sepolia Live) 🌪️
 
-Ecosistema DeFi avanzado: AMM, Hooks de incentivos (ERC-1155), **Hook Registry (Modularidad)** y **EVM Mentor (IA Educativa)**.
+Ecosistema DeFi avanzado desplegado en la red de prueba **Sepolia**. Vortex combina un AMM modular con la potencia de la Inteligencia Artificial (EVM Mentor) para educar a los usuarios en tiempo real.
 
-## 🧱 Arquitectura Modular
-- **Hook Registry**: Permite actualizar hooks sin migrar liquidez del pool.
-- **EVM Mentor**: IA que explica las transacciones en tiempo real al usuario.
-- **Dynamic Fee Hook**: Ajusta comisiones según la volatilidad del mercado.
+> [!TIP]
+> Esta es la versión final optimizada. Para ver la historia del desarrollo local y el aprendizaje con Anvil, consulta el [📜 Manual de Legado](./README_LEGACY.md).
 
 ---
 
-## 📋 Requisitos Previos — Solución de Errores
+## 🏆 Hitos del Proyecto
+1. **Fase Génesis**: Desarrollo de la lógica modular y AMM en entorno local (Anvil).
+2. **Mentalidad de IA**: Integración del EVM Mentor para democratizar el conocimiento DeFi.
+3. **Salto a la Red Real**: Migración exitosa a **Sepolia Testnet**, logrando persistencia de datos y estabilidad profesional.
 
-Si ves `"forge" no se reconoce` o `"npm" no se reconoce`, ejecuta esto **una sola vez** en PowerShell:
+---
+
+## 🚀 Inicio Rápido (Modo Eficiente)
+
+Ya no necesitas configurar nodos locales ni desplegar contratos. El protocolo está **Live** y listo para usar.
+
+### 🌐 Único Paso — Interfaz Web
+Abre una terminal de PowerShell en la raíz del proyecto y ejecuta:
 
 ```powershell
-# Instalar Foundry y arreglar PATH
-$dir="$HOME\.foundry\bin"
-if(!(Test-Path $dir)){ New-Item -ItemType Directory -Force -Path $dir }
-curl.exe -L "https://github.com/foundry-rs/foundry/releases/download/nightly/foundry_nightly_win32_amd64.tar.gz" -o "$dir\foundry.tar.gz"
-tar.exe -xf "$dir\foundry.tar.gz" -C $dir
-Remove-Item "$dir\foundry.tar.gz"
-$oldPath = [Environment]::GetEnvironmentVariable("Path", "User")
-if ($oldPath -notlike "*foundry*") {
-    [Environment]::SetEnvironmentVariable("Path", "$oldPath;C:\Program Files\nodejs\;$dir", "User")
-}
-Write-Host "LISTO. Cierra y vuelve a abrir VS Code." -ForegroundColor Green
-```
-
----
-
-## 🚀 Cómo Ejecutar el Proyecto
-
-> ⚠️ **IMPORTANTE**: La carpeta raíz del repo es `VortexProtocol\Vortex-Protocol\defi-hub\`.
-> Todos los comandos usan la ruta **completa** para evitar errores.
-
-Abre **3 terminales de PowerShell** en VS Code y sigue este orden:
-
----
-
-### 🏁 TERMINAL 1 — Nodo Blockchain Local (Anvil)
-
-```powershell
-cd C:\Users\usuario\Desktop\descargas\VortexProtocol\Vortex-Protocol\defi-hub\contracts
-anvil --host 127.0.0.1 --port 8546 --base-fee 0 --gas-limit 100000000
-```
-
-> Deja esta terminal abierta. Si ves `"Error: puerto en uso"`, Anvil ya está corriendo — no necesitas abrirlo de nuevo.
-
----
-
-### 🔨 TERMINAL 2 — Despliegue de Contratos
-
-```powershell
-cd C:\Users\usuario\Desktop\descargas\VortexProtocol\Vortex-Protocol\defi-hub\contracts
-# Reemplaza 0xTU_BILLETERA por tu dirección (ej: 0x4f30...71f4) para recibir 10k tokens de regalo
-powershell -ExecutionPolicy Bypass -File .\deploy_local.ps1 -port 8546 -userWallet 0xTU_BILLETERA
-```
-
-Este script despliega automáticamente en orden:
-`TKNA → TKNB → HookRegistry → PointsHook → DynamicFeeHook → AMM → Liquidez inicial`
-
-> **Pro-Tip**: Si usas una billetera importada (que no sea de Anvil), el script también te enviará **ETH de regalo** para que tengas gas para operar.
-
----
-
-### 🌐 TERMINAL 3 — Interfaz Web (Frontend)
-
-**Espera a que el Terminal 2 termine** y luego ejecuta:
-
-```powershell
-cd C:\Users\usuario\Desktop\descargas\VortexProtocol\Vortex-Protocol\defi-hub\frontend
-# Matar procesos viejos y arrancar limpio
-taskkill /F /IM node.exe
+# Ir directamente a la carpeta del frontend
+cd Vortex-Protocol/defi-hub/frontend
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en el navegador.
-
-### 🦊 Configuración de MetaMask (CRÍTICO)
-
-1. **Red Anvil**:
-| Campo | Valor |
-|---|---|
-| Nombre de red | Vortex Local |
-| URL RPC | **`http://127.0.0.1:8546`** (Debe incluir http://) |
-| Chain ID | `31337` |
-| Símbolo | ETH / GO |
-
-2. **Solución a transacciones trabadas (SIEMPRE HACER ESTO AL REINICIAR)**:
-Si los balances salen en 0.00 o las transacciones fallan:
-- Ve a MetaMask > Clic en icono de cuenta > **Configuración** > **Avanzado**.
-- Clic en **"Borrar datos de actividad de pestañas"** (o "Reiniciar cuenta").
-- Refresca la web con F5.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ---
 
-## Estructura del Proyecto
+## 🦊 Configuración de MetaMask
 
+Conecta tu billetera (se recomienda la cuenta de demo `0x4f30...71f4`) a la red oficial de pruebas:
+
+| Campo | Valor |
+|---|---|
+| Red | **Sepolia Test Network** |
+| Chain ID | `11155111` |
+| Símbolo | SepoliaETH |
+
+### 💎 Direcciones del Protocolo (Sepolia)
+- **Token A (TKNA)**: `0xba4164f1829b8e1eef0f78b6aee517d8fdac34ee`
+- **Token B (TKNB)**: `0x7ba20dcd66d3ea1f8e2f56a25ba8db58aee6735e`
+- **AMM Principal**: `0x33e5adf857f02c5e56174c99b610c86e04610a6d`
+
+---
+
+## 🧠 Características Principales
+- **EVM Mentor**: Detecta volátiles y explica cambios en las comisiones automáticamente.
+- **Loyalty Points**: Gana tokens ERC-1155 por cada swap exitoso.
+- **Modularidad**: Hooks dinámicos que ajustan el comportamiento del pool sin pausar el protocolo.
+
+---
+
+## 📁 Estructura
 ```
 defi-hub/
-├── contracts/          # Smart Contracts (Foundry)
-│   ├── src/            # AMM, HookRegistry, PointsHook, DynamicFeeHook
-│   ├── script/         # Deploy.s.sol
-│   └── deploy_local.ps1  # Script de despliegue local (workaround)
-└── frontend/           # Next.js + Wagmi/Viem + EVM Mentor (IA)
+├── contracts/          # Código fuente de los Smart Contracts (Foundry)
+├── frontend/           # Aplicación Next.js + IA Mentor
+└── README_LEGACY.md    # Registro histórico del desarrollo local
 ```

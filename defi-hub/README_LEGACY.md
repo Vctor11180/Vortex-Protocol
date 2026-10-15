@@ -32,14 +32,35 @@ Write-Host "LISTO. Cierra y vuelve a abrir VS Code." -ForegroundColor Green
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto
+---
 
-> ⚠️ **IMPORTANTE**: La carpeta raíz del repo es `VortexProtocol\Vortex-Protocol\defi-hub\`.
-> Todos los comandos usan la ruta **completa** para evitar errores.
+## 🛠️ Inicialización del Proyecto (PASO CRÍTICO)
 
-Abre **3 terminales de PowerShell** en VS Code y sigue este orden:
+Antes de ejecutar, debes preparar el entorno descargando las librerías y dependencias necesarias:
+
+### 1. Descargar Librerías de Contratos (Submódulos)
+Ejecuta esto en la raíz del proyecto para descargar OpenZeppelin y otras dependencias:
+```powershell
+git submodule update --init --recursive
+```
+
+### 2. Preparar los Smart Contracts
+Compila los contratos para generar los ABIs que usará el frontend:
+```powershell
+cd C:\Users\usuario\Desktop\descargas\VortexProtocol\Vortex-Protocol\defi-hub\contracts
+forge build
+```
+
+### 3. Instalar Dependencias del Frontend
+Instala los paquetes de Node.js necesarios para la interfaz:
+```powershell
+cd C:\Users\usuario\Desktop\descargas\VortexProtocol\Vortex-Protocol\defi-hub\frontend
+npm install
+```
 
 ---
+
+## 🚀 Cómo Ejecutar el Proyecto
 
 ### 🏁 TERMINAL 1 — Nodo Blockchain Local (Anvil)
 

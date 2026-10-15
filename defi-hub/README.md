@@ -42,9 +42,14 @@ Conecta tu billetera (se recomienda la cuenta de demo `0x4f30...71f4`) a la red 
 | Símbolo | SepoliaETH |
 
 ### 💎 Direcciones del Protocolo (Sepolia)
-- **Token A (TKNA)**: `0xba4164f1829b8e1eef0f78b6aee517d8fdac34ee`
-- **Token B (TKNB)**: `0x7ba20dcd66d3ea1f8e2f56a25ba8db58aee6735e`
-- **AMM Principal**: `0x33e5adf857f02c5e56174c99b610c86e04610a6d`
+
+| Contrato | Dirección Completa | Etherscan |
+|---|---|---|
+| **Token A (TKNA)** | `0xba4164f1829b8e1eef0f78b6aee517d8fdac34ee` | [Ver en Etherscan](https://sepolia.etherscan.io/address/0xba4164f1829b8e1eef0f78b6aee517d8fdac34ee) |
+| **Token B (TKNB)** | `0x7ba20dcd66d3ea1f8e2f56a25ba8db58aee6735e` | [Ver en Etherscan](https://sepolia.etherscan.io/address/0x7ba20dcd66d3ea1f8e2f56a25ba8db58aee6735e) |
+| **PointsHook (ERC-1155)** | `0x8e3ababc691790ac21f1cfc82ece0bd9d25b93b8` | [Ver en Etherscan](https://sepolia.etherscan.io/address/0x8e3ababc691790ac21f1cfc82ece0bd9d25b93b8) |
+| **DynamicFeeHook** | `0x94c0b5d70c3fd6802ace0736ccb0f8e624fc5028` | [Ver en Etherscan](https://sepolia.etherscan.io/address/0x94c0b5d70c3fd6802ace0736ccb0f8e624fc5028) |
+| **AMM Principal** | `0x33e5adf857f02c5e56174c99b610c86e04610a6d` | [Ver en Etherscan](https://sepolia.etherscan.io/address/0x33e5adf857f02c5e56174c99b610c86e04610a6d) |
 
 ---
 
